@@ -1,2 +1,2 @@
-gTTS
-python-vlc
+pyttsx3
+prompt-tooklit
