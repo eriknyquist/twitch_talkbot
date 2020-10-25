@@ -2,7 +2,7 @@ import io
 
 import pyttsx3
 
-from talkbot.text_to_speech import TextToSpeech, TextToSpeechQueue
+from twitch_talkbot.text_to_speech import TextToSpeech, TextToSpeechQueue
 
 
 # Gotta do this stupid wrapper class to work around pyttsx3 win10 bug
