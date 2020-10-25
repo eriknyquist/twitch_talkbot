@@ -5,9 +5,17 @@ import pyttsx3
 from talkbot.text_to_speech import TextToSpeech, TextToSpeechQueue
 
 
-engine = pyttsx3.init()
-#engine.setProperty('voice', 'en-gb')
+# Gotta do this stupid wrapper class to work around pyttsx3 win10 bug
+class TTSWrapper:
+    engine = None
+    rate = None
+    def __init__(self):
+        self.engine = pyttsx3.init()
+        self.engine.setProperty("rate", 150)
 
+    def say(self, text):
+        self.engine.say(text)
+        self.engine.runAndWait()
 
 class PYTTSX3TextToSpeech(TextToSpeech):
     def __init__(self, *args, **kwargs):
@@ -20,9 +28,10 @@ class PYTTSX3TextToSpeech(TextToSpeech):
         if text is None:
             raise RuntimeError("No speech text provided")
 
-        engine.say(text)
-        engine.runAndWait()
-
+        t = TTSWrapper()
+        t.say(text)
+        del(t)
+        
     def voices(self):
         return [v.id for v in engine.getProperty("voices")]
 

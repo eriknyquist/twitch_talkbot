@@ -1,2 +1,2 @@
 pyttsx3
-prompt-tooklit
+prompt-toolkit
