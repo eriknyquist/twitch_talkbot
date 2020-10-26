@@ -1,4 +1,5 @@
-import multiprocessing
+import asyncio
+import threading
 from twitchio.ext import commands
 
 from twitch_talkbot.command_processor import CommandProcessor
@@ -7,6 +8,7 @@ from prompt_toolkit.completion import PathCompleter
 from prompt_toolkit import prompt as prompt_toolkit_prompt
 from prompt_toolkit import PromptSession
 from prompt_toolkit.history import InMemoryHistory
+
 
 class TwitchBot(commands.Bot):
     def __init__(self, config, *args, **kwargs):
@@ -40,15 +42,17 @@ class Talkbot(object):
         self.session = PromptSession(history=InMemoryHistory(),
                                      enable_history_search=True)
 
-        self.bot_thread = multiprocessing.Process(target=self.bot.run)
-        self.bot_thread.daemon = True
+        self.event_loop = asyncio.get_event_loop()
+        self.event_thread = threading.Thread(target=self.event_loop.run_forever)
+        self.event_thread.daemon = True
 
     def run(self):
-        #self.bot_thread.start()
-        self.bot.run()
+        self.event_thread.start()
+        asyncio.run_coroutine_threadsafe(self.bot.start(), self.event_loop)
 
         while True:
-            text = self.session.prompt("> ")
+            f = asyncio.run_coroutine_threadsafe(self.session.prompt_async("> "), self.event_loop)
+            text = f.result()
             text = text.strip()
 
             if text:
