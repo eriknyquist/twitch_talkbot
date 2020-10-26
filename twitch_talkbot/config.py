@@ -7,6 +7,9 @@ TWITCH_CLIENTID_DEFAULT = ""
 TWITCH_AUTH_TOKEN_KEY = "twitch_auth_token"
 TWITCH_AUTH_TOKEN_DEFAULT = ""
 
+TWITCH_BOT_ACCOUNT_KEY = "twitch_bot_account"
+TWITCH_BOT_ACCOUNT_DEFAULT = ""
+
 COMMANDS_KEY = "commands"
 COMMANDS_DEFAULT = {}
 
@@ -21,7 +24,7 @@ class BotConfig(object):
     @classmethod
     def from_file(cls, filename):
         return BotConfig(filename)
-    
+
     def __init__(self, filename=None):
         self.filename = filename
 
@@ -29,6 +32,7 @@ class BotConfig(object):
             # No filename passed- use default values
             self.twitch_client_id = TWITCH_CLIENTID_DEFAULT
             self.twitch_auth_token = TWITCH_AUTH_TOKEN_DEFAULT
+            self.twitch_bot_account = TWITCH_BOT_ACCOUNT_DEFAULT
             self.commands = COMMANDS_DEFAULT
         else:
             # Load provided config file
@@ -40,6 +44,7 @@ class BotConfig(object):
 
         self.twitch_client_id = load_cfg_default(attrs, TWITCH_CLIENTID_KEY, TWITCH_CLIENTID_DEFAULT)
         self.twitch_auth_token = load_cfg_default(attrs, TWITCH_AUTH_TOKEN_KEY, TWITCH_AUTH_TOKEN_DEFAULT)
+        self.twitch_bot_account = load_cfg_default(attrs, TWITCH_BOT_ACCOUNT_KEY, TWITCH_BOT_ACCOUNT_DEFAULT)
         self.commands = load_cfg_default(attrs, COMMANDS_KEY, COMMANDS_DEFAULT)
 
         return self
@@ -52,5 +57,6 @@ class BotConfig(object):
             json.dump({
                 TWITCH_CLIENTID_KEY: self.twitch_client_id,
                 TWITCH_AUTH_TOKEN_KEY: self.twitch_auth_token,
+                TWITCH_BOT_ACCOUNT_KEY: self.twitch_bot_account,
                 COMMANDS_KEY: self.commands
             }, fh, indent=4)

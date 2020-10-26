@@ -15,7 +15,7 @@ def main():
         return
 
     config = BotConfig(CONFIG_FILE)
-    b = Talkbot(config, "", "", "")
+    b = Talkbot(config)
     b.run()
 
 if __name__ == "__main__":
