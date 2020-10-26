@@ -2,7 +2,8 @@ import asyncio
 import threading
 from twitchio.ext import commands
 
-from twitch_talkbot.command_processor import CommandProcessor
+import twitch_talkbot
+from twitch_talkbot.command_processor import CommandProcessor, twitch_talkbot_command_list
 
 from prompt_toolkit.completion import PathCompleter
 from prompt_toolkit import prompt as prompt_toolkit_prompt
@@ -36,7 +37,7 @@ class TwitchBot(commands.Bot):
 class Talkbot(object):
     def __init__(self, config):
         self.config = config
-        self.processor = CommandProcessor(config, self)
+        self.processor = CommandProcessor(config, self, twitch_talkbot_command_list)
 
         self.bot = TwitchBot(config, self.processor,
                 irc_token=config.twitch_auth_token,
@@ -58,9 +59,12 @@ class Talkbot(object):
         asyncio.run_coroutine_threadsafe(chan.send(text), self.event_loop)
 
     def run(self):
+        print('>> %s version %s' % (twitch_talkbot.__name__, twitch_talkbot.__version__))
+        print('>> Connecting to %s\'s twitch chat...' % self.config.twitch_bot_account)
         self.event_thread.start()
         asyncio.run_coroutine_threadsafe(self.bot.start(), self.event_loop)
         self.bot.ready.wait()
+        print('>> Connected!')
 
         while True:
             f = asyncio.run_coroutine_threadsafe(self.session.prompt_async("> "), self.event_loop)
