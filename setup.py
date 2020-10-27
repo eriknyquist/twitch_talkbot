@@ -1,6 +1,6 @@
 import unittest
 import os
-from setuptools import setup
+from setuptools import setup, find_packages
 from distutils.core import Command
 
 from twitch_talkbot import __version__
@@ -20,7 +20,7 @@ setup(
     author='Erik Nyquist',
     author_email='eknyquist@gmail.com',
     license='Apache 2.0',
-    packages=['twitch_talkbot'],
+    packages=find_packages(),
     include_package_data=True,
     zip_safe=False
 )
