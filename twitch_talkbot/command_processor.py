@@ -1,9 +1,21 @@
+import sys
 import asyncio
 
 from twitch_talkbot.tts.pyttsx3_tts import PYTTSX3TextToSpeech
 from twitch_talkbot.text_to_speech import TextToSpeechQueue
 
 COMMAND_PREFIX = "!"
+
+CMD_VOICES_HELP = """{0}
+
+Shows a list of available TTS voices.
+"""
+
+CMD_VOICE_HELP = """{0} [voice]
+
+Set the voice to use for TTS. [voice] should be the name of a voice as reported
+by the !voices command.
+"""
 
 CMD_HELP_HELP = """{0} [command]
 
@@ -110,13 +122,20 @@ class CommandProcessor(object):
 
         if text.startswith(COMMAND_PREFIX):
             # Pass to command processor
+            print("\n<< processing command from twitch chat: '%s'" % text)
             resp = self.process_command(text)
             if resp:
                 print("\n" + resp + "\n")
 
+            sys.stdout.write("> ")
+            sys.stdout.flush()
+
             return
 
         # Not a command, speak this text
+        print("\n<< speaking text from twitch chat: '%s'" % text)
+        sys.stdout.write("> ")
+        sys.stdout.flush()
         self.queue.put(self.tts_class(text))
 
 
@@ -160,6 +179,27 @@ def cmd_cmd(proc, config, bot, args):
     config.save_to_file()
     return "New command '%s' added successfully!" % name
 
+def cmd_voices(proc, config, bot, args):
+    tts = PYTTSX3TextToSpeech()
+    return "\n".join(tts.voices())
+
+def cmd_voice(proc, config, bot, args):
+    if len(args) < 1:
+        return "Please provide the name of the voice you want to use"
+
+    tts = PYTTSX3TextToSpeech()
+    voices = tts.voices()
+    voice_id = args[0].strip()
+
+    if voice_id not in voices:
+        return "Sorry, but '%s' is not a valid voice ID" % voice_id
+
+    tts.set_voice(voice_id)
+    config.voice_id = voice_id
+    config.save_to_file()
+
+    return "OK! I will speak with the '%s' voice from now on." % voice_id
+
 def cmd_help(proc, config, bot, args):
     if len(args) == 0:
         return proc.help()
@@ -176,5 +216,7 @@ def cmd_help(proc, config, bot, args):
 
 twitch_talkbot_command_list = [
     Command("help", cmd_help, CMD_HELP_HELP),
-    Command("cmd", cmd_cmd, CMD_CMD_HELP)
+    Command("cmd", cmd_cmd, CMD_CMD_HELP),
+    Command("voices", cmd_voices, CMD_VOICES_HELP),
+    Command("voice", cmd_voice, CMD_VOICE_HELP)
 ]

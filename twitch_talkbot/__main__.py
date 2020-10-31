@@ -2,6 +2,8 @@ import os
 
 from twitch_talkbot.config import BotConfig
 from twitch_talkbot.talkbot import Talkbot
+from twitch_talkbot.tts.pyttsx3_tts import PYTTSX3TextToSpeech
+
 
 CONFIG_FILE = os.path.join(os.path.expanduser('~'), 'twitch_talkbot_config.json')
 
@@ -15,6 +17,10 @@ def main():
         return
 
     config = BotConfig(CONFIG_FILE)
+
+    if config.voice_id is not None:
+        PYTTSX3TextToSpeech().set_voice(config.voice_id)
+
     b = Talkbot(config)
     b.run()
 

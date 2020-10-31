@@ -1,5 +1,7 @@
 import json
 
+TTS_VOICEID_KEY = "tts_voice_id"
+TTS_VOICEID_DEFAULT = None
 
 TWITCH_CLIENTID_KEY = "twitch_client_id"
 TWITCH_CLIENTID_DEFAULT = ""
@@ -30,6 +32,7 @@ class BotConfig(object):
 
         if filename is None:
             # No filename passed- use default values
+            self.voice_id = TTS_VOICEID_DEFAULT
             self.twitch_client_id = TWITCH_CLIENTID_DEFAULT
             self.twitch_auth_token = TWITCH_AUTH_TOKEN_DEFAULT
             self.twitch_bot_account = TWITCH_BOT_ACCOUNT_DEFAULT
@@ -42,6 +45,7 @@ class BotConfig(object):
         with open(filename, 'r') as fh:
             attrs = json.load(fh)
 
+        self.voice_id = load_cfg_default(attrs, TTS_VOICEID_KEY, TTS_VOICEID_DEFAULT)
         self.twitch_client_id = load_cfg_default(attrs, TWITCH_CLIENTID_KEY, TWITCH_CLIENTID_DEFAULT)
         self.twitch_auth_token = load_cfg_default(attrs, TWITCH_AUTH_TOKEN_KEY, TWITCH_AUTH_TOKEN_DEFAULT)
         self.twitch_bot_account = load_cfg_default(attrs, TWITCH_BOT_ACCOUNT_KEY, TWITCH_BOT_ACCOUNT_DEFAULT)
@@ -55,6 +59,7 @@ class BotConfig(object):
 
         with open(filename, 'w') as fh:
             json.dump({
+                TTS_VOICEID_KEY: self.voice_id,
                 TWITCH_CLIENTID_KEY: self.twitch_client_id,
                 TWITCH_AUTH_TOKEN_KEY: self.twitch_auth_token,
                 TWITCH_BOT_ACCOUNT_KEY: self.twitch_bot_account,
